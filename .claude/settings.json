@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//usr/games/**)",
+      "Bash(curl -fsSL https://api.github.com/repos/official-stockfish/Stockfish/releases/latest)",
+      "Read(//proc/**)"
+    ]
+  }
+}

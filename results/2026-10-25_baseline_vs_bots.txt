@@ -1,0 +1,22 @@
+Playing 200 games with 8 worker(s)...
+  20/200 games
+  40/200 games
+  60/200 games
+  80/200 games
+  100/200 games
+  120/200 games
+  140/200 games
+  160/200 games
+  180/200 games
+  200/200 games
+
+Results (score of the first player in each pair):
+  agents/baseline                vs bot:greedy                      77.0 / 100
+  agents/baseline                vs bot:guess-sf-4x500              67.0 / 100
+
+How games ended: {'king captured': 200}
+
+Ratings (95% interval):
+  agents/baseline                   1195   [ 1145,  1255]
+  bot:guess-sf-4x500                1060   [ 1060,  1060] (reference, fixed)
+  bot:greedy                        1000   [ 1000,  1000] (reference, fixed)
