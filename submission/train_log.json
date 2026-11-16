@@ -1,0 +1,37 @@
+{
+ "args": {
+  "data": [
+   "data/r0",
+   "data/r1"
+  ],
+  "out": "submission",
+  "channels": 78,
+  "blocks": 8,
+  "epochs": 6,
+  "batch": 1024,
+  "lr": 0.002,
+  "wd": 0.0001,
+  "tau": 0.03,
+  "w_belief": 0.5,
+  "w_value": 0.5,
+  "w_policy": 1.0,
+  "val": 0.03,
+  "mix_margin": 0.01,
+  "select": "q",
+  "seed": 0,
+  "device": "cuda"
+ },
+ "val": {
+  "q": 0.3772530409860186,
+  "policy": 2.884867247609125,
+  "value": 0.39095768932547953,
+  "belief": 0.41435981138683603,
+  "q_top1": 0.2886010224018414,
+  "q_regret": 0.03237642648563814,
+  "pol_top1": 0.33827583438160747,
+  "pol_regret": 0.03596127246682816
+ },
+ "params": 984773,
+ "train_positions": 2265119,
+ "seconds": 155
+}
