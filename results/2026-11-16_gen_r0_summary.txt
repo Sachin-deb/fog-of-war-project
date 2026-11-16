@@ -1,0 +1,1 @@
+wrote 1262078 positions to data/r0 in 2983s

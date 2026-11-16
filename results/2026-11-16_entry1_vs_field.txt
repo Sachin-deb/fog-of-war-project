@@ -1,0 +1,15 @@
+  agents/baseline                vs submission                       8.0 / 100
+  bot:greedy                     vs submission                       4.0 / 100
+  bot:guess-sf-16x1000           vs submission                       6.0 / 100
+  bot:guess-sf-4x500             vs submission                      11.0 / 100
+  checkpoints/r0                 vs submission                      34.0 / 100
+
+How games ended: {'king captured': 492, '100 plies without capture or pawn move': 2, "white error: Search for `cudaErrorMemoryAllocation' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.": 1, 'white error: RuntimeError: cuDNN error: CUDNN_STATUS_EXECUTION_FAILED_CUDART': 3, 'black error: RuntimeError: cuDNN error: CUDNN_STATUS_EXECUTION_FAILED_CUDART': 2}
+
+Ratings (95% interval):
+  submission                        1567   [ 1496,  1672]
+  checkpoints/r0                    1451   [ 1358,  1567]
+  bot:guess-sf-16x1000              1225   [ 1225,  1225] (reference, fixed)
+  agents/baseline                   1142   [  980,  1277]
+  bot:guess-sf-4x500                1060   [ 1060,  1060] (reference, fixed)
+  bot:greedy                        1000   [ 1000,  1000] (reference, fixed)

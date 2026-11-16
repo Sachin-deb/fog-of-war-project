@@ -1,0 +1,14 @@
+Results (score of the first player in each pair):
+  agents/baseline                vs checkpoints/r0                  19.5 / 100
+  bot:greedy                     vs checkpoints/r0                   7.0 / 100
+  bot:guess-sf-16x1000           vs checkpoints/r0                  19.0 / 100
+  bot:guess-sf-4x500             vs checkpoints/r0                  16.0 / 100
+
+How games ended: {'king captured': 399, '100 plies without capture or pawn move': 1}
+
+Ratings (95% interval):
+  checkpoints/r0                    1429   [ 1376,  1490]
+  bot:guess-sf-16x1000              1225   [ 1225,  1225] (reference, fixed)
+  agents/baseline                   1183   [ 1073,  1298]
+  bot:guess-sf-4x500                1060   [ 1060,  1060] (reference, fixed)
+  bot:greedy                        1000   [ 1000,  1000] (reference, fixed)

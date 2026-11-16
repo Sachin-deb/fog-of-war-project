@@ -1,0 +1,9 @@
+2339845 positions from 510 shards; 2265119 train / 74726 validation (4s)
+model: 984,773 parameters (incl. buffers)
+epoch 1/6 (25s) train q 0.4243 policy 2.9983 value 0.4299 belief 0.5162 | val q 0.5510 policy 3.0810 value 0.4036 belief 0.7937 q_top1 0.2015 q_regret 0.0512 pol_top1 0.2670 pol_regret 0.0448
+epoch 2/6 (25s) train q 0.3941 policy 2.9134 value 0.4060 belief 0.4337 | val q 0.3894 policy 2.9200 value 0.3978 belief 0.4548 q_top1 0.2379 q_regret 0.0379 pol_top1 0.3141 pol_regret 0.0394
+epoch 3/6 (25s) train q 0.3861 policy 2.8958 value 0.4018 belief 0.4231 | val q 0.3827 policy 2.8972 value 0.3954 belief 0.4241 q_top1 0.2566 q_regret 0.0345 pol_top1 0.3355 pol_regret 0.0367
+epoch 4/6 (25s) train q 0.3829 policy 2.8773 value 0.3989 belief 0.4163 | val q 0.3799 policy 2.8902 value 0.3927 belief 0.4217 q_top1 0.2796 q_regret 0.0333 pol_top1 0.3327 pol_regret 0.0355
+epoch 5/6 (25s) train q 0.3821 policy 2.8585 value 0.3977 belief 0.4098 | val q 0.3781 policy 2.8846 value 0.3918 belief 0.4146 q_top1 0.2887 q_regret 0.0324 pol_top1 0.3377 pol_regret 0.0363
+epoch 6/6 (25s) train q 0.3816 policy 2.8395 value 0.3978 belief 0.4070 | val q 0.3773 policy 2.8849 value 0.3910 belief 0.4144 q_top1 0.2886 q_regret 0.0324 pol_top1 0.3383 pol_regret 0.0360
+saved to submission (155s total)

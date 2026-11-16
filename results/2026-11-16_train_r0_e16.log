@@ -1,0 +1,19 @@
+1262078 positions from 300 shards; 1207167 train / 54911 validation (2s)
+model: 984,773 parameters (incl. buffers)
+epoch 1/16 (14s) train q 0.4451 policy 3.0391 value 0.4375 belief 0.5677 | val q 0.3941 policy 2.9388 value 0.3953 belief 0.4610 q_top1 0.2283 q_regret 0.0450 pol_top1 0.3081 pol_regret 0.0429
+epoch 2/16 (13s) train q 0.3897 policy 2.9216 value 0.3940 belief 0.4442 | val q 0.3918 policy 2.9167 value 0.4018 belief 0.4401 q_top1 0.2367 q_regret 0.0403 pol_top1 0.3159 pol_regret 0.0405
+epoch 3/16 (13s) train q 0.3852 policy 2.8963 value 0.3912 belief 0.4311 | val q 0.3825 policy 2.9022 value 0.3890 belief 0.4379 q_top1 0.2540 q_regret 0.0373 pol_top1 0.3201 pol_regret 0.0383
+epoch 4/16 (13s) train q 0.3794 policy 2.8840 value 0.3884 belief 0.4247 | val q 0.4126 policy 3.0250 value 0.4894 belief 1.3966 q_top1 0.2052 q_regret 0.0498 pol_top1 0.2505 pol_regret 0.0492
+epoch 5/16 (13s) train q 0.3770 policy 2.8798 value 0.3842 belief 0.4214 | val q 0.3979 policy 2.9033 value 0.4045 belief 0.4488 q_top1 0.2640 q_regret 0.0356 pol_top1 0.3308 pol_regret 0.0376
+epoch 6/16 (13s) train q 0.3783 policy 2.8743 value 0.3852 belief 0.4163 | val q 0.3795 policy 2.8904 value 0.3882 belief 0.4234 q_top1 0.2882 q_regret 0.0339 pol_top1 0.3300 pol_regret 0.0362
+epoch 7/16 (13s) train q 0.3762 policy 2.8571 value 0.3839 belief 0.4136 | val q 0.3782 policy 2.8859 value 0.3876 belief 0.4185 q_top1 0.2857 q_regret 0.0341 pol_top1 0.3246 pol_regret 0.0340
+epoch 8/16 (13s) train q 0.3740 policy 2.8536 value 0.3835 belief 0.4136 | val q 0.3794 policy 2.8887 value 0.3900 belief 0.4171 q_top1 0.2811 q_regret 0.0336 pol_top1 0.3269 pol_regret 0.0347
+epoch 9/16 (13s) train q 0.3748 policy 2.8383 value 0.3846 belief 0.4111 | val q 0.3845 policy 2.8970 value 0.3941 belief 0.4161 q_top1 0.2875 q_regret 0.0331 pol_top1 0.3253 pol_regret 0.0356
+epoch 10/16 (21s) train q 0.3730 policy 2.8226 value 0.3810 belief 0.4093 | val q 0.3771 policy 2.8919 value 0.3875 belief 0.4138 q_top1 0.2843 q_regret 0.0329 pol_top1 0.3243 pol_regret 0.0355
+epoch 11/16 (18s) train q 0.3738 policy 2.8143 value 0.3830 belief 0.4086 | val q 0.3769 policy 2.8956 value 0.3859 belief 0.4138 q_top1 0.2893 q_regret 0.0329 pol_top1 0.3257 pol_regret 0.0360
+epoch 12/16 (13s) train q 0.3723 policy 2.7926 value 0.3829 belief 0.4083 | val q 0.3774 policy 2.9004 value 0.3861 belief 0.4130 q_top1 0.2822 q_regret 0.0331 pol_top1 0.3245 pol_regret 0.0360
+epoch 13/16 (13s) train q 0.3720 policy 2.7815 value 0.3807 belief 0.4074 | val q 0.3763 policy 2.9071 value 0.3855 belief 0.4130 q_top1 0.2929 q_regret 0.0328 pol_top1 0.3228 pol_regret 0.0363
+epoch 14/16 (13s) train q 0.3717 policy 2.7829 value 0.3781 belief 0.4073 | val q 0.3762 policy 2.9119 value 0.3853 belief 0.4129 q_top1 0.2942 q_regret 0.0332 pol_top1 0.3236 pol_regret 0.0365
+epoch 15/16 (13s) train q 0.3675 policy 2.7708 value 0.3775 belief 0.4076 | val q 0.3763 policy 2.9173 value 0.3854 belief 0.4129 q_top1 0.2938 q_regret 0.0332 pol_top1 0.3230 pol_regret 0.0363
+epoch 16/16 (13s) train q 0.3671 policy 2.7757 value 0.3768 belief 0.4055 | val q 0.3763 policy 2.9179 value 0.3854 belief 0.4129 q_top1 0.2940 q_regret 0.0331 pol_top1 0.3230 pol_regret 0.0363
+saved to /tmp/claude-1000/-home-night-wolf-Documents-fog-of-war-project/00b62fb8-6462-47a7-bcd2-365cfb195e63/scratchpad/r0_e16 (229s total)
