@@ -4,8 +4,8 @@ Each turn it
   1. updates its memory of the game with the new observation (features.Encoder: plain
      bookkeeping of what it has seen and what the rules imply about hidden squares);
   2. if a visible enemy king can be captured, captures it (the rule that wins the game);
-  3. otherwise scores every legal move with the network's action-value head (model.FowNet) and
-     plays the best one. To avoid being fully predictable, it may pick among moves whose
+  3. otherwise scores every legal move with the network (model.FowNet; the action-value head,
+     or the policy head if config.json says "select": "policy") and plays the best one. To avoid being fully predictable, it may pick among moves whose
      predicted win probability is within `mix_margin` of the best, with probabilities from the
      network's policy head, drawn from a generator seeded by the game seed (replayable).
 
@@ -39,6 +39,7 @@ class Agent:
         self.net.load_state_dict(load_file(os.path.join(agent_dir, "weights", "model.safetensors")))
         self.net.to(self.device).eval()
         self.mix_margin = float(cfg.get("mix_margin", 0.0))
+        self.select = cfg.get("select", "q")         # "q": action-value head, "policy": policy head
         self.reset("white", 0)
 
     def reset(self, color: str, seed: int) -> None:
@@ -58,7 +59,10 @@ class Agent:
                       torch.from_numpy(scal)[None]).to(self.device)
         q, pol = self.net.play_heads(x)
         idx = list(legal)
-        qv = torch.sigmoid(q[0, idx].float()).cpu().tolist()
+        if self.select == "policy":    # policy probabilities play the role of move scores
+            qv = torch.softmax(pol[0, idx].float(), 0).cpu().tolist()
+        else:
+            qv = torch.sigmoid(q[0, idx].float()).cpu().tolist()
         best = max(range(len(idx)), key=lambda i: qv[i])
         if self.mix_margin > 0:
             cand = [i for i in range(len(idx)) if qv[i] >= qv[best] - self.mix_margin]

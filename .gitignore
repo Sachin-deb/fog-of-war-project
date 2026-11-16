@@ -8,3 +8,5 @@ data/
 runs/
 *.jsonl
 stockfish/
+ev/
+checkpoints/

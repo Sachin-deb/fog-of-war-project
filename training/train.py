@@ -142,6 +142,8 @@ def main():
     ap.add_argument("--w-policy", type=float, default=1.0)
     ap.add_argument("--val", type=float, default=0.03)
     ap.add_argument("--mix-margin", type=float, default=0.01, help="written to config.json for the agent")
+    ap.add_argument("--select", default="q", choices=["q", "policy"],
+                    help="which head the agent plays by (written to config.json)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
@@ -197,7 +199,7 @@ def main():
     save_file({k: v.detach().float().cpu().contiguous() for k, v in net.state_dict().items()},
               os.path.join(args.out, "weights", "model.safetensors"))
     cfg = {"in_planes": N_PLANES, "channels": args.channels, "blocks": args.blocks,
-           "mix_margin": args.mix_margin}
+           "mix_margin": args.mix_margin, "select": args.select}
     json.dump(cfg, open(os.path.join(args.out, "config.json"), "w"), indent=1)
     json.dump({"args": vars(args), "val": ev, "params": n_params, "train_positions": n,
                "seconds": round(time.time() - t0)},
