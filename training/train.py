@@ -38,7 +38,16 @@ sys.path.insert(0, SUB)
 from features import N_BITS, N_PLANES, to_planes  # noqa: E402
 from model import FowNet  # noqa: E402
 
-KEYS = ("bits", "age", "scal", "moves", "q", "belief")
+KEYS = ("bits", "age", "scal", "moves", "q", "belief", "played", "outcome", "labeled")
+
+
+def _field(d, k):
+    """Older shards (rounds 0 and 1) have no game outcomes: played = -1, labeled = 1."""
+    if k in d:
+        return d[k]
+    n = len(d["ply"])
+    return {"played": np.full(n, -1, np.int16), "outcome": np.full(n, 0.5, np.float16),
+            "labeled": np.ones(n, np.uint8)}[k]
 
 
 def load(dirs, val_frac):
@@ -52,7 +61,7 @@ def load(dirs, val_frac):
     for f, v in zip(shards, is_val):
         d = np.load(f)
         for k in KEYS:
-            parts["val" if v else "train"][k].append(d[k])
+            parts["val" if v else "train"][k].append(_field(d, k))
     out = {}
     for split, p in parts.items():
         out[split] = {k: np.concatenate(v) for k, v in p.items()}
@@ -67,6 +76,9 @@ def to_dev(arrs, dev):
         "moves": torch.from_numpy(arrs["moves"].astype(np.int64)).to(dev),
         "q": torch.from_numpy(arrs["q"]).to(dev),
         "belief": torch.from_numpy(arrs["belief"].astype(np.int64)).to(dev),
+        "played": torch.from_numpy(arrs["played"].astype(np.int64)).to(dev),
+        "outcome": torch.from_numpy(arrs["outcome"].astype(np.float32)).to(dev),
+        "labeled": torch.from_numpy(arrs["labeled"].astype(bool)).to(dev),
     }
 
 
@@ -83,47 +95,78 @@ def batch_inputs(D, idx):
     return x, bits
 
 
-def losses(net, D, idx, tau):
+def losses(net, D, idx, tau, lam=0.0, w_mc=1.0):
+    """Training losses. Labelled rows: q regression to the teacher's values over all legal moves,
+    where the move actually played is pulled toward the game result with weight `lam`
+    (Monte-Carlo return of the policy that played the game); soft policy; value; belief.
+    Unlabelled rows (moves[0] = the played move, q[0] = the game result): only the played move's
+    q and the value are trained, toward the game result, with weight `w_mc`.
+    Returns the losses, plus q/policy logits and the raw teacher values for metrics."""
     x, bits = batch_inputs(D, idx)
     out = net(x)
     mv = D["moves"][idx]
     legal = mv >= 0
     mvc = mv.clamp(min=0)
     tq = D["q"][idx].float()
+    lab = D["labeled"][idx]
+    z = D["outcome"][idx]
+    played = D["played"][idx]
+    has_ret = lab & (played >= 0)
+    tgt_q = tq
+    if lam > 0:
+        at = (mv == played[:, None]) & has_ret[:, None]
+        tgt_q = torch.where(at, (1 - lam) * tq + lam * z[:, None], tq)
     ql = out["q"].float().gather(1, mvc)
-    lq = F.binary_cross_entropy_with_logits(ql, tq, reduction="none")
-    lq = (lq * legal).sum(1) / legal.sum(1)
+    lq = F.binary_cross_entropy_with_logits(ql, tgt_q, reduction="none")
+    lq = (lq * legal).sum(1) / legal.sum(1).clamp(min=1)
+    rw = torch.where(lab, torch.ones_like(z), torch.full_like(z, w_mc))
     pl = out["policy"].float().gather(1, mvc).masked_fill(~legal, -1e9)
-    tgt = torch.softmax((tq / tau).masked_fill(~legal, -1e9), 1)
-    lp = -(tgt * torch.log_softmax(pl, 1)).sum(1)
+    soft = torch.softmax((tq / tau).masked_fill(~legal, -1e9), 1)
+    lp = -(soft * torch.log_softmax(pl, 1)).sum(1)
+    labf = lab.float()
     tv = tq.masked_fill(~legal, -1).max(1).values
+    if lam > 0:
+        tv = torch.where(has_ret, (1 - lam) * tv + lam * z, tv)
+    tv = torch.where(lab, tv, z)
     lv = F.binary_cross_entropy_with_logits(out["value"].float(), tv, reduction="none")
     hidden = bits[:, 12] == 0                                       # not visible now
     lb = F.cross_entropy(out["belief"].float(), D["belief"][idx], reduction="none")
     lb = (lb * hidden).sum(1) / hidden.sum(1).clamp(min=1)
-    return {"q": lq.mean(), "policy": lp.mean(), "value": lv.mean(), "belief": lb.mean()}, ql, pl, tq, legal
+    # danger: the teacher scores exactly 0 the moves that leave my king capturable (teacher.py)
+    dl = out["danger"].float().gather(1, mvc)
+    ld = F.binary_cross_entropy_with_logits(dl, (tq == 0).float(), reduction="none")
+    lmask = legal & lab[:, None]
+    ld = (ld * lmask).sum(1) / lmask.sum(1).clamp(min=1)
+    n_lab = labf.sum().clamp(min=1)
+    return ({"q": (lq * rw).sum() / rw.sum(), "policy": (lp * labf).sum() / n_lab,
+             "value": lv.mean(), "belief": lb.mean(), "danger": (ld * labf).sum() / n_lab},
+            ql, pl, tq, legal, lab)
 
 
 @torch.no_grad()
 def evaluate(net, D, tau, bs=4096):
     net.eval()
     n = D["moves"].shape[0]
-    tot = {"q": 0.0, "policy": 0.0, "value": 0.0, "belief": 0.0}
+    tot = {"q": 0.0, "policy": 0.0, "value": 0.0, "belief": 0.0, "danger": 0.0}
     m = {"q_top1": 0.0, "q_regret": 0.0, "pol_top1": 0.0, "pol_regret": 0.0}
+    nl = 0
     for i in range(0, n, bs):
         idx = torch.arange(i, min(n, i + bs), device=D["moves"].device)
         with torch.autocast("cuda", dtype=torch.bfloat16, enabled=idx.is_cuda):
-            ls, ql, pl, tq, legal = losses(net, D, idx, tau)
+            ls, ql, pl, tq, legal, lab = losses(net, D, idx, tau)
         for k, v in ls.items():
             tot[k] += v.item() * len(idx)
+        nl += lab.sum().item()
+        legal = legal & lab[:, None]
+        tq = tq.masked_fill(~lab[:, None], 0)
         tqm = tq.masked_fill(~legal, -1)
         best = tqm.max(1)
         for name, logits in (("q", ql.masked_fill(~legal, -1e9)), ("pol", pl)):
             ch = logits.argmax(1)
-            m[f"{name}_top1"] += (ch == best.indices).float().sum().item()
-            m[f"{name}_regret"] += (best.values - tq.gather(1, ch[:, None]).squeeze(1)).sum().item()
+            m[f"{name}_top1"] += ((ch == best.indices) & lab).float().sum().item()
+            m[f"{name}_regret"] += ((best.values - tq.gather(1, ch[:, None]).squeeze(1)) * lab).sum().item()
     net.train()
-    return {**{k: v / n for k, v in tot.items()}, **{k: v / n for k, v in m.items()}}
+    return {**{k: v / n for k, v in tot.items()}, **{k: v / max(1, nl) for k, v in m.items()}}
 
 
 def main():
@@ -139,7 +182,11 @@ def main():
     ap.add_argument("--tau", type=float, default=0.03, help="temperature of the soft policy target")
     ap.add_argument("--w-belief", type=float, default=0.5)
     ap.add_argument("--w-value", type=float, default=0.5)
+    ap.add_argument("--w-danger", type=float, default=0.5)
     ap.add_argument("--w-policy", type=float, default=1.0)
+    ap.add_argument("--outcome-lambda", type=float, default=0.0,
+                    help="weight of the game result in the q target of the move actually played")
+    ap.add_argument("--w-mc", type=float, default=1.0, help="loss weight of unlabelled (result-only) rows")
     ap.add_argument("--val", type=float, default=0.03)
     ap.add_argument("--mix-margin", type=float, default=0.01, help="written to config.json for the agent")
     ap.add_argument("--select", default="q", choices=["q", "policy"],
@@ -168,7 +215,8 @@ def main():
     total = args.epochs * steps_per_epoch
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=args.lr, total_steps=total, pct_start=0.05)
     gen = torch.Generator(device=dev).manual_seed(args.seed)
-    w = {"q": 1.0, "policy": args.w_policy, "value": args.w_value, "belief": args.w_belief}
+    w = {"q": 1.0, "policy": args.w_policy, "value": args.w_value, "belief": args.w_belief,
+         "danger": args.w_danger}
     step = 0
     for ep in range(args.epochs):
         t = time.time()
@@ -177,7 +225,7 @@ def main():
         for i in range(steps_per_epoch):
             idx = perm[i * args.batch:(i + 1) * args.batch]
             with torch.autocast("cuda", dtype=torch.bfloat16, enabled=dev.type == "cuda"):
-                ls, *_ = losses(net, tr, idx, args.tau)
+                ls, *_ = losses(net, tr, idx, args.tau, args.outcome_lambda, args.w_mc)
             loss = sum(w[k] * ls[k] for k in w)
             opt.zero_grad(set_to_none=True)
             loss.backward()
