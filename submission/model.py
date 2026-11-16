@@ -4,8 +4,9 @@ Heads
   q       [B, 4096]  logit of the win probability after each (from, to) move (action value)
   policy  [B, 4096]  logits of a soft policy over (from, to) moves
   value   [B]        logit of the win probability of the position
-  belief  [B, 7, 64] logits over {no enemy, P, N, B, R, Q, K} for every square (training aid;
-                     its trunk features are shared with the other heads)
+  danger  [B, 4096]  logit of the probability that the move leaves my king capturable
+  belief  [B, 7, 64] logits over {no enemy, P, N, B, R, Q, K} for every square; the agent's
+                     search samples hidden boards from it
 
 Move scores combine a per-from-square 1x1 convolution (64 output channels = destination square)
 with a low-rank bilinear term between the from-square and to-square embeddings.
@@ -59,6 +60,7 @@ class FowNet(nn.Module):
         self.blocks = nn.Sequential(*[Block(channels) for _ in range(blocks)])
         self.q = MoveHead(channels)
         self.policy = MoveHead(channels)
+        self.danger = MoveHead(channels)
         self.belief = nn.Conv2d(channels, 7, 1)
         self.v1 = nn.Conv2d(channels, 4, 1)
         self.v2 = nn.Linear(4 * 64, 64)
@@ -70,10 +72,10 @@ class FowNet(nn.Module):
     def forward(self, x):
         h = self.trunk(x)
         v = self.v3(torch.relu(self.v2(torch.relu(self.v1(h)).flatten(1)))).squeeze(1)
-        return {"q": self.q(h), "policy": self.policy(h), "value": v,
+        return {"q": self.q(h), "policy": self.policy(h), "value": v, "danger": self.danger(h),
                 "belief": self.belief(h).flatten(2)}
 
     def play_heads(self, x):
-        """Only what play needs (q and policy): skips the training-only heads."""
+        """What play needs: q, policy, danger and belief (skips the value head)."""
         h = self.trunk(x)
-        return self.q(h), self.policy(h)
+        return self.q(h), self.policy(h), self.danger(h), self.belief(h).flatten(2)
