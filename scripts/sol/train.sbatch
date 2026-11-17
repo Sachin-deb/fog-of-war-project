@@ -1,22 +1,16 @@
 #!/bin/bash
-# GPU job: train FowNet (training/train.py).
-#   ROUND=0 sbatch scripts/sol/train.sbatch     -> checkpoints/r0 (used to play round-1 games)
-#   ROUND=1 sbatch scripts/sol/train.sbatch     -> submission/ (the entry)
+# GPU job: one training stage of training/pipeline.sh (train0 ... train3, final).
+#   STAGE=train0 sbatch scripts/sol/train.sbatch
 #SBATCH -J fow-train
 #SBATCH -q class
 #SBATCH -p general            # partition and QoS names: see ASU Research Computing docs
 #SBATCH -G 1
 #SBATCH -c 8
-#SBATCH --mem=64G
-#SBATCH -t 02:00:00
+#SBATCH --mem=96G
+#SBATCH -t 01:30:00
 #SBATCH -o runs/%x-%j.out
 set -euo pipefail
 module load mamba/latest
 source activate fow
-ROUND=${ROUND:-1}
-if [ "$ROUND" = 0 ]; then
-  python training/train.py --data data/r0 --out checkpoints/r0 --epochs 6 --seed 0 --device cuda
-else
-  python training/train.py --data data/r0 data/r1 --out submission --epochs 6 --seed 0 --device cuda
-  python -m fow.validate submission --device cuda
-fi
+DEVICE=cuda bash training/pipeline.sh "${STAGE:?set STAGE=train0..train3 or final}"
+if [ "$STAGE" = final ]; then python -m fow.validate submission --device cuda; fi
