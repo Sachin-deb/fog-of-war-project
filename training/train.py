@@ -50,8 +50,11 @@ def _field(d, k):
             "labeled": np.ones(n, np.uint8)}[k]
 
 
-def load(dirs, val_frac):
+def load(dirs, val_frac, outcome_from=None):
+    """outcome_from: data dirs whose game results may be used (None = all). Elsewhere the played
+    move is hidden (played = -1), so the outcome blend does not touch those rows."""
     shards = sorted(f for d in dirs for f in glob.glob(os.path.join(d, "*.npz")))
+    use_out = None if outcome_from is None else {os.path.normpath(d) for d in outcome_from}
     # hold out whole shards (whole games) for validation, spread over workers and rounds
     rs = np.random.RandomState(12345)
     is_val = rs.rand(len(shards)) < val_frac
@@ -59,7 +62,9 @@ def load(dirs, val_frac):
         is_val[0] = True
     parts = {"train": {k: [] for k in KEYS}, "val": {k: [] for k in KEYS}}
     for f, v in zip(shards, is_val):
-        d = np.load(f)
+        d = dict(np.load(f))
+        if use_out is not None and os.path.normpath(os.path.dirname(f)) not in use_out and "played" in d:
+            d["played"] = np.where(d.get("labeled", 1) == 1, -1, d["played"]).astype(np.int16)
         for k in KEYS:
             parts["val" if v else "train"][k].append(_field(d, k))
     out = {}
@@ -186,6 +191,8 @@ def main():
     ap.add_argument("--w-policy", type=float, default=1.0)
     ap.add_argument("--outcome-lambda", type=float, default=0.0,
                     help="weight of the game result in the q target of the move actually played")
+    ap.add_argument("--outcome-from", nargs="*", default=None,
+                    help="only these data dirs contribute game results (default: all)")
     ap.add_argument("--w-mc", type=float, default=1.0, help="loss weight of unlabelled (result-only) rows")
     ap.add_argument("--val", type=float, default=0.03)
     ap.add_argument("--mix-margin", type=float, default=0.01, help="written to config.json for the agent")
@@ -198,7 +205,7 @@ def main():
     np.random.seed(args.seed)
     dev = torch.device(args.device)
     t0 = time.time()
-    data, n_shards = load(args.data, args.val)
+    data, n_shards = load(args.data, args.val, args.outcome_from)
     tr, va = to_dev(data["train"], dev), to_dev(data["val"], dev)
     n = tr["moves"].shape[0]
     print(f"{n + va['moves'].shape[0]} positions from {n_shards} shards; {n} train / "
