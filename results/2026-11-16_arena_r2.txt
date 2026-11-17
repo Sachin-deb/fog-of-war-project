@@ -1,0 +1,27 @@
+Playing 600 games with 8 worker(s)...
+  60/600 games
+  120/600 games
+  180/600 games
+  240/600 games
+  300/600 games
+  360/600 games
+  420/600 games
+  480/600 games
+  540/600 games
+  600/600 games
+
+Results (score of the first player in each pair):
+  bot:guess-sf-16x1000           vs checkpoints/r1                  15.0 / 100
+  bot:guess-sf-16x1000           vs checkpoints/r2_l0               19.0 / 100
+  bot:guess-sf-16x1000           vs checkpoints/r2_l0.3              8.0 / 100
+  checkpoints/r1                 vs checkpoints/r2_l0               38.5 / 100
+  checkpoints/r1                 vs checkpoints/r2_l0.3             46.0 / 100
+  checkpoints/r2_l0              vs checkpoints/r2_l0.3             41.0 / 100
+
+How games ended: {'king captured': 585, '100 plies without capture or pawn move': 15}
+
+Ratings (95% interval):
+  checkpoints/r2_l0.3               1580   [ 1518,  1654]
+  checkpoints/r2_l0                 1536   [ 1478,  1618]
+  checkpoints/r1                    1508   [ 1459,  1574]
+  bot:guess-sf-16x1000              1225   [ 1225,  1225] (reference, fixed)

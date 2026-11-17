@@ -1,0 +1,13 @@
+10303357 positions from 1410 shards; 9966500 train / 336857 validation (15s)
+model: 994,885 parameters (incl. buffers)
+epoch 1/10 (114s) train q 0.4203 policy 2.9461 value 0.5076 belief 0.4533 danger 0.0877 | val q 0.4516 policy 2.9017 value 0.4718 belief 0.4288 danger 0.0677 q_top1 0.2329 q_regret 0.0398 pol_top1 0.3082 pol_regret 0.0457
+epoch 2/10 (114s) train q 0.4027 policy 2.8825 value 0.4983 belief 0.3971 danger 0.0628 | val q 0.4461 policy 2.8704 value 0.4672 belief 0.3993 danger 0.0620 q_top1 0.2790 q_regret 0.0361 pol_top1 0.3332 pol_regret 0.0411
+epoch 3/10 (114s) train q 0.3994 policy 2.8588 value 0.4959 belief 0.3881 danger 0.0596 | val q 0.4460 policy 2.8705 value 0.4693 belief 0.4017 danger 0.0609 q_top1 0.2557 q_regret 0.0350 pol_top1 0.3348 pol_regret 0.0406
+epoch 4/10 (114s) train q 0.3984 policy 2.8443 value 0.4947 belief 0.3838 danger 0.0579 | val q 0.4435 policy 2.8556 value 0.4656 belief 0.3895 danger 0.0584 q_top1 0.2849 q_regret 0.0337 pol_top1 0.3417 pol_regret 0.0404
+epoch 5/10 (114s) train q 0.3964 policy 2.8418 value 0.4925 belief 0.3804 danger 0.0574 | val q 0.4437 policy 2.8459 value 0.4654 belief 0.3845 danger 0.0579 q_top1 0.2925 q_regret 0.0329 pol_top1 0.3475 pol_regret 0.0388
+epoch 6/10 (114s) train q 0.3947 policy 2.8325 value 0.4901 belief 0.3766 danger 0.0550 | val q 0.4426 policy 2.8428 value 0.4640 belief 0.3823 danger 0.0575 q_top1 0.2736 q_regret 0.0328 pol_top1 0.3481 pol_regret 0.0384
+epoch 7/10 (114s) train q 0.3943 policy 2.8234 value 0.4908 belief 0.3742 danger 0.0538 | val q 0.4418 policy 2.8386 value 0.4643 belief 0.3791 danger 0.0568 q_top1 0.2932 q_regret 0.0318 pol_top1 0.3543 pol_regret 0.0377
+epoch 8/10 (114s) train q 0.3939 policy 2.8165 value 0.4889 belief 0.3717 danger 0.0537 | val q 0.4410 policy 2.8370 value 0.4645 belief 0.3783 danger 0.0564 q_top1 0.3007 q_regret 0.0318 pol_top1 0.3549 pol_regret 0.0374
+epoch 9/10 (114s) train q 0.3919 policy 2.8138 value 0.4876 belief 0.3715 danger 0.0529 | val q 0.4415 policy 2.8364 value 0.4642 belief 0.3777 danger 0.0564 q_top1 0.2971 q_regret 0.0317 pol_top1 0.3568 pol_regret 0.0371
+epoch 10/10 (114s) train q 0.3929 policy 2.8075 value 0.4891 belief 0.3713 danger 0.0518 | val q 0.4414 policy 2.8368 value 0.4642 belief 0.3776 danger 0.0565 q_top1 0.2982 q_regret 0.0317 pol_top1 0.3571 pol_regret 0.0368
+saved to checkpoints/r4_e10 (1152s total)

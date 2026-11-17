@@ -1,0 +1,9 @@
+4177946 positions from 810 shards; 4054632 train / 123314 validation (14s)
+model: 998,395 parameters (incl. buffers)
+epoch 1/6 (114s) train q 0.4197 policy 2.9722 value 0.4629 belief 0.4929 danger 0.0982 | val q 0.3970 policy 2.9051 value 0.4243 belief 0.4298 danger 0.0799 q_top1 0.2499 q_regret 0.0386 pol_top1 0.3301 pol_regret 0.0409
+epoch 2/6 (114s) train q 0.3992 policy 2.8913 value 0.4492 belief 0.4167 danger 0.0689 | val q 0.3915 policy 2.8820 value 0.4160 belief 0.4182 danger 0.0718 q_top1 0.2806 q_regret 0.0358 pol_top1 0.3387 pol_regret 0.0394
+epoch 3/6 (117s) train q 0.3952 policy 2.8685 value 0.4459 belief 0.4041 danger 0.0634 | val q 0.3902 policy 2.8735 value 0.4151 belief 0.4099 danger 0.0702 q_top1 0.2896 q_regret 0.0344 pol_top1 0.3347 pol_regret 0.0373
+epoch 4/6 (116s) train q 0.3902 policy 2.8527 value 0.4408 belief 0.3982 danger 0.0618 | val q 0.3878 policy 2.8619 value 0.4143 belief 0.4011 danger 0.0678 q_top1 0.2993 q_regret 0.0329 pol_top1 0.3506 pol_regret 0.0375
+epoch 5/6 (113s) train q 0.3906 policy 2.8335 value 0.4410 belief 0.3929 danger 0.0601 | val q 0.3862 policy 2.8559 value 0.4116 belief 0.3973 danger 0.0670 q_top1 0.3034 q_regret 0.0325 pol_top1 0.3552 pol_regret 0.0359
+epoch 6/6 (114s) train q 0.3910 policy 2.8225 value 0.4420 belief 0.3897 danger 0.0575 | val q 0.3859 policy 2.8553 value 0.4119 belief 0.3965 danger 0.0670 q_top1 0.3006 q_regret 0.0322 pol_top1 0.3549 pol_regret 0.0356
+saved to checkpoints/r2g_l0.3 (702s total)

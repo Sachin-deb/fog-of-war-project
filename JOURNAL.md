@@ -76,3 +76,84 @@ This is where the evidence for your grade lives (see docs/GRADING.md).
 - **Decision:** the remaining weakness is not seeing threats from hidden pieces. Next: PLAN
   Step 3, search over boards sampled from the belief head, checking for king capture by the
   rules and scoring the rest with the network, then the size sweep and the ablations above.
+
+> The entries below (2026-11-16, evening) were also **drafted by Claude Code (AI)** from its
+> runs; numbers are copied from `results/`. They still need my review and my own reasoning.
+
+### 2026-11-16: model size (1M vs 3.2M vs 15M)
+- **Question / hypothesis:** is the 1M network capacity-limited?
+- **Commit:** `ad8bbba` code; `train.py --channels/--blocks`.
+- **Setup:** same data (rounds 0+1, 2.34M positions), 6 epochs each: 78x8 (0.98M), 128x10
+  (3.18M), 256x12 (14.96M). 200 games per pairing against the 1M network.
+- **Result:** validation q regret 0.0324 / 0.0310 / 0.0303. In games: 3.2M +63 Elo [22, 105],
+  15M +82 [28, 131] over the 1M network (`results/2026-11-16_arena_size.txt`).
+- **Decision:** that is about 38 Elo per halving of size from 1M to 3.2M and about 21 per
+  halving up to 15M. Whether a bigger model pays off depends on beta: if beta is above about
+  40, 1M is best. I stay at 1M until beta is announced; the pipeline takes `--channels/--blocks`.
+
+### 2026-11-16: belief-sampled king-safety search (PLAN Step 3) - did not help
+- **Question / hypothesis:** 259 of 301 losses involved a hidden attacker on my king. CNNs are
+  poor at exact line geometry, so sample hidden boards from the belief head, check with the rules
+  whether each move leaves the king capturable on each sample, and use that to correct the q
+  value: q = P(safe) Q_safe, so Q_safe = q / (1 - danger), value = (1 - p) Q_safe, with p a blend
+  of a new danger head and the sampled frequency (`trust`).
+- **Commit:** `c86202f` (danger head), `77e8f4c` (search, calibration tool).
+- **Setup:** rounds 0+1 network with the danger head; 32 samples; round robin, 100 games per pair.
+- **Result:** search off +43 [-4, 76], trust 0.5 +29 [-33, 66], trust 1.0 +13 [-33, 55], all
+  relative to entry-1's network (`results/2026-11-16_arena_search.txt`). Calibration over 37,420
+  real moves (`training/eval_danger.py`): the danger head alone has log-loss 0.0297, the best
+  blend 0.0267, samples alone 0.0316. The trained network already knows king danger about as
+  well as independent samples from its own belief marginals, so the search adds little.
+- **Decision:** keep the code, off (`samples: 0`). A better sampler (joint, not per-square)
+  would be needed for this to pay.
+
+### 2026-11-16: league rounds and outcome-blended action values (the RL part)
+- **Question / hypothesis:** Stockfish's values assume both sides see everything. Pulling the q
+  target of the move actually played toward the real game result (Monte-Carlo return of the
+  policy that played it) should teach what works under fog, while Stockfish's values on all other
+  moves keep it anchored. Iterating rounds is then on-policy policy iteration.
+- **Commit:** `78883d5` (league, results), `5441fca` (outcome blend).
+- **Setup:** round 2: 60,000 league games (round-1 network vs itself, round 0, the baseline,
+  noisy Stockfish, bots), 1,838,101 positions in 84 min. Networks on rounds 0-2 with lambda 0,
+  0.3, 0.6.
+- **Result:** lambda 0.3 beat lambda 0 59-41, and scored 92/100 against guess-sf-16x1000
+  (lambda 0: 81/100) (`results/2026-11-16_arena_r2.txt`). lambda 0.6 was worse than 0.3:
+  86.5/200 (`results/2026-11-16_arena_lambda.txt`). Validation regret was the same for all
+  three, so this effect only shows in games.
+- **Decision:** lambda 0.3.
+
+### 2026-11-16: rule-derived geometry input planes - did not help
+- **Question / hypothesis:** give the network the attack maps and the open lines around my
+  king directly (computed exactly by the rules from what it has seen).
+- **Setup:** 5 extra planes, checked exactly against python-chess on 32,128 squares; same data
+  and settings as the lambda 0.3 network.
+- **Result:** same validation regret; -29 Elo [-67, -3] over 300 games
+  (`results/2026-11-16_arena_geometry.txt`). Reverted; code kept in `training/experiments/`.
+
+### 2026-11-16: round 3, and result-only positions hurt
+- **Question / hypothesis:** more Monte-Carlo signal: also store positions without Stockfish
+  labels (60% of positions) and train the played move's q toward the result.
+- **Setup:** round 3: 60,000 league games with the lambda-0.3 network, 1.6M labelled + 2.4M
+  result-only positions. Two networks on rounds 0-3: with the result-only rows (`r3`) and
+  without (`r3_nomc`, `--w-mc 0`).
+- **Result:** `r3` beat its predecessors (115/200 against round 2) but got worse against
+  outside opponents: 73/100 against guess-sf-16x1000 (round 2: 92/100), while beating the
+  deterministic baseline 100/100, which looks like exploiting league members. Its validation
+  regret rose to 0.0399. `r3_nomc`: regret 0.0325, 88/100 against guess-sf-16x1000, and it beat
+  both round 2 (115-85) and `r3` (105.5-94.5) (`results/2026-11-16_arena_r3_rr.txt`).
+- **Decision:** drop result-only rows; the outcome blend on labelled moves is enough. Round 4
+  uses `r3_nomc` as the agent, all positions labelled, with `r3` kept as a league member.
+
+### 2026-11-16: round 4 and the entry
+- **Question / hypothesis:** one more league round with `r3_nomc` playing, all positions
+  labelled, should keep improving; does training longer on the larger dataset help?
+- **Setup:** round 4: 60,000 league games (`r3_nomc` against itself, r0, r1, r2_l0, r2_l0.3,
+  r3, the baseline, noisy Stockfish, bots), 2,102,086 positions in 88 min. Network `r4` on
+  rounds 0-4, outcome weight 0.3 on rounds 2-4, result-only rows ignored; also a 10-epoch copy.
+- **Result:** `r4` scored 102/200 against `r3_nomc` and 120/200 against `r2_l0.3`
+  (`results/2026-11-16_arena_r4.txt`), 91/100 against guess-sf-16x1000 and rated 1534
+  [1479, 1618] on the bot panel (`results/2026-11-16_arena_r4_bots.txt`). Validation regret
+  0.0324. The 10-epoch copy tied `r4` 100-100 (`results/2026-11-16_arena_r4_e10.txt`).
+- **Decision:** `r4` is the entry (the `final` stage of `training/pipeline.sh` trains exactly
+  it). Gains per round are now small, so I stop rounds here for entry-1; the remaining losses
+  are mostly to attackers I could not see.

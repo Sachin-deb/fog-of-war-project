@@ -1,0 +1,20 @@
+Playing 300 games with 6 worker(s)...
+  30/300 games
+  60/300 games
+  90/300 games
+  120/300 games
+  150/300 games
+  180/300 games
+  210/300 games
+  240/300 games
+  270/300 games
+  300/300 games
+
+Results (score of the first player in each pair):
+  checkpoints/r2_l0.3            vs checkpoints/r2g_l0.3           162.5 / 300
+
+How games ended: {'king captured': 285, '100 plies without capture or pawn move': 15}
+
+Ratings (95% interval):
+  checkpoints/r2_l0.3                  0   [    0,     0]
+  checkpoints/r2g_l0.3               -29   [  -67,    -3]

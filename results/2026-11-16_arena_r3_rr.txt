@@ -1,0 +1,23 @@
+Playing 600 games with 6 worker(s)...
+  60/600 games
+  120/600 games
+  180/600 games
+  240/600 games
+  300/600 games
+  360/600 games
+  420/600 games
+  480/600 games
+  540/600 games
+  600/600 games
+
+Results (score of the first player in each pair):
+  checkpoints/r2_l0.3            vs checkpoints/r3                  86.5 / 200
+  checkpoints/r2_l0.3            vs checkpoints/r3_nomc             85.0 / 200
+  checkpoints/r3                 vs checkpoints/r3_nomc             94.5 / 200
+
+How games ended: {'king captured': 558, '100 plies without capture or pawn move': 42}
+
+Ratings (95% interval):
+  checkpoints/r3_nomc                 57   [   18,   100]
+  checkpoints/r3                      43   [    8,    75]
+  checkpoints/r2_l0.3                  0   [    0,     0]

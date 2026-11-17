@@ -1,0 +1,22 @@
+Playing 400 games with 6 worker(s)...
+  40/400 games
+  80/400 games
+  120/400 games
+  160/400 games
+  200/400 games
+  240/400 games
+  280/400 games
+  320/400 games
+  360/400 games
+  400/400 games
+
+Results (score of the first player in each pair):
+  checkpoints/r2_l0.3            vs checkpoints/r4                  80.0 / 200
+  checkpoints/r3_nomc            vs checkpoints/r4                  98.0 / 200
+
+How games ended: {'king captured': 376, '100 plies without capture or pawn move': 24}
+
+Ratings (95% interval):
+  checkpoints/r4                      71   [   28,   118]
+  checkpoints/r3_nomc                 64   [    3,   125]
+  checkpoints/r2_l0.3                  0   [    0,     0]

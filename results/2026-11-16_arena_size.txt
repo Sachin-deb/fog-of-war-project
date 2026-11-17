@@ -1,0 +1,9 @@
+  checkpoints/r1                 vs checkpoints/size_c128_b10       82.0 / 200
+  checkpoints/r1                 vs checkpoints/size_c256_b12       77.0 / 200
+
+How games ended: {'king captured': 396, '100 plies without capture or pawn move': 4}
+
+Ratings (95% interval):
+  checkpoints/size_c256_b12           82   [   28,   131]
+  checkpoints/size_c128_b10           63   [   22,   105]
+  checkpoints/r1                       0   [    0,     0]

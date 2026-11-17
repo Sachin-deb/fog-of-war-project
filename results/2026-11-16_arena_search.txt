@@ -1,0 +1,27 @@
+Playing 600 games with 6 worker(s)...
+  60/600 games
+  120/600 games
+  180/600 games
+  240/600 games
+  300/600 games
+  360/600 games
+  420/600 games
+  480/600 games
+  540/600 games
+  600/600 games
+
+Results (score of the first player in each pair):
+  checkpoints/r1                 vs checkpoints/r1d_s0              40.0 / 100
+  checkpoints/r1                 vs checkpoints/r1d_s32t100         55.0 / 100
+  checkpoints/r1                 vs checkpoints/r1d_s32t50          43.0 / 100
+  checkpoints/r1d_s0             vs checkpoints/r1d_s32t100         56.0 / 100
+  checkpoints/r1d_s0             vs checkpoints/r1d_s32t50          46.5 / 100
+  checkpoints/r1d_s32t100        vs checkpoints/r1d_s32t50          56.0 / 100
+
+How games ended: {'king captured': 577, '100 plies without capture or pawn move': 23}
+
+Ratings (95% interval):
+  checkpoints/r1d_s0                  43   [   -4,    76]
+  checkpoints/r1d_s32t50              29   [  -33,    66]
+  checkpoints/r1d_s32t100             13   [  -33,    55]
+  checkpoints/r1                       0   [    0,     0]
