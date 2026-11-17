@@ -7,8 +7,10 @@
   position value and a belief over enemy pieces on each square. The agent plays by the q head.
 - **Parameters:** 994,885 as counted by `python -m fow.params submission` (includes batch-norm
   statistics and the value, belief and danger heads, which play does not use)
-- **Weight files and SHA-256:** `weights/model.safetensors`,
+- **Weight files and SHA-256:** `submission/weights/model.safetensors` (committed, 4.0 MB),
   `1ce155870376c5f59e6ffa20b4eb078a95f2a7e7821b6abb29f487901309b506`
+- **Tournament device:** `cuda`. The agent also runs on `cpu` (it uses whichever `device` it is
+  given); `fow.validate` reports VALID on both.
 - **Input:** 33 binary planes, a square-age plane and 7 scalar planes; see `features.py`
 - **Play-time code besides the network:** observation encoding and memory (`features.Encoder`),
   capturing a visible king (a rule), and a seeded random choice among moves whose predicted win
