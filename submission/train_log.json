@@ -4,9 +4,10 @@
    "data/r0",
    "data/r1",
    "data/r2",
-   "data/r3"
+   "data/r3",
+   "data/r4"
   ],
-  "out": "checkpoints/r3_nomc",
+  "out": "checkpoints/r4",
   "channels": 78,
   "blocks": 8,
   "epochs": 6,
@@ -21,7 +22,8 @@
   "outcome_lambda": 0.3,
   "outcome_from": [
    "data/r2",
-   "data/r3"
+   "data/r3",
+   "data/r4"
   ],
   "w_mc": 0.0,
   "val": 0.03,
@@ -31,17 +33,17 @@
   "device": "cuda"
  },
  "val": {
-  "q": 0.45956413526333395,
-  "policy": 2.8455236278894467,
-  "value": 0.47280432304989994,
-  "belief": 0.3852646884347374,
-  "danger": 0.05851970979322762,
-  "q_top1": 0.30680795352262497,
-  "q_regret": 0.03252244824238442,
-  "pol_top1": 0.3547231346511274,
-  "pol_regret": 0.037160649339141094
+  "q": 0.4418381164788421,
+  "policy": 2.838517217506699,
+  "value": 0.46482961989118793,
+  "belief": 0.37994689720989544,
+  "danger": 0.056956294574126126,
+  "q_top1": 0.2974876472824021,
+  "q_regret": 0.03236025241516879,
+  "pol_top1": 0.35478525275560624,
+  "pol_regret": 0.0375040902950065
  },
  "params": 994885,
- "train_positions": 7956420,
- "seconds": 939
+ "train_positions": 9966500,
+ "seconds": 696
 }
